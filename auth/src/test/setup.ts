@@ -8,7 +8,6 @@ declare global {
     var signin: () => Promise<string[]>;
 }
 
-mongoose.set('strictQuery', false);
 let mongo: MongoMemoryServer;
 
 beforeAll(async () => {
@@ -16,6 +15,7 @@ beforeAll(async () => {
 
     mongo = await MongoMemoryServer.create();
     const mongoUri = mongo.getUri();
+    mongoose.set('strictQuery', false);
 
     await mongoose.connect(mongoUri, {});
 });

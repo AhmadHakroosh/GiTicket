@@ -1,5 +1,5 @@
 import { Model, Schema, model } from "mongoose";
-import { PasswordService } from "../services/password-service";
+import { PasswordService } from "../services";
 
 /**
  * An interface that describes the properties

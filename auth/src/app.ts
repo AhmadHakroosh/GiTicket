@@ -3,12 +3,9 @@ import "express-async-errors";
 import { json } from "body-parser";
 import cookieSession from "cookie-session";
 
-import { currentUserRouter } from "./routes/current-user";
-import { signinRouter } from "./routes/signin";
-import { signupRouter } from "./routes/signup";
-import { signoutRouter } from "./routes/signout";
-import { errorHandler } from "./middlewares/error-handler";
-import { NotFoundError } from "./errors/not-found-error";
+import { signupRouter, signinRouter, signoutRouter, currentUserRouter } from "./routes";
+import { errorHandler } from "./middlewares";
+import { NotFoundError } from "./errors";
 
 const app = express();
 app.set('trust-proxy', true);
