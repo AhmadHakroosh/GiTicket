@@ -1,5 +1,5 @@
 import { Model, Schema, model } from "mongoose";
-import { Password } from "../services/password";
+import { PasswordService } from "../services/password-service";
 
 /**
  * An interface that describes the properties
@@ -48,7 +48,7 @@ const UserSchema = new Schema({
 
 UserSchema.pre('save', async function(done) {
     if(this.isModified('password')) {
-        const hashed = await Password.hash(this.get('password'));
+        const hashed = await PasswordService.hash(this.get('password'));
         this.set('password', hashed);
     }
     done();
