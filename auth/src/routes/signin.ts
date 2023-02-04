@@ -3,8 +3,7 @@ import { body } from "express-validator";
 import jwt from "jsonwebtoken";
 
 import { User } from "../models";
-import { validateRequest } from "../middlewares";
-import { BadRequestError } from "../errors";
+import { validateRequest, BadRequestError } from "@giticket.dev/common";
 import { PasswordService } from "../services";
 
 const router = Router();

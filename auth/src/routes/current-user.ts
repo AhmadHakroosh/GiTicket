@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { currentUser } from "../middlewares/current-user";
+import { currentUser } from "@giticket.dev/common";
 
 const router = Router();
 
