@@ -1,5 +1,6 @@
 import { ValidationError } from 'express-validator';
-import { BaseError } from '.';
+
+import { BaseError } from './base-error';
 
 export class RequestValidationError extends BaseError {
   statusCode = 400;
