@@ -1,30 +1,22 @@
-export enum Status {
+export enum OrderStatus {
     /**
      * When the order has been created, but the
      *  ticket it's trying to order has not been reserved
      */
-    created = "created",
+    Created = "created",
     /**
      * The ticket the order is trying to reserve has already 
      * been reserved, or when the user has cancelled the order.
      * Or if the order expires before payment
      */
-    cancelled = "cancelled",
+    Cancelled = "cancelled",
     /**
      * The order has successfully reserved the ticket
      */
-    pending = "pending",
+    Pending = "pending",
     /**
      * The order has reserved the ticket and the user has provided
      * payment successfully
      */
-    complete = "complete"
+    Complete = "complete"
 };
-
-
-
-/**
- * All statuses available for orders
- */
-export type OrderStatus = keyof typeof Status;
-
