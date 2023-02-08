@@ -26,5 +26,5 @@ export enum Status {
 /**
  * All statuses available for orders
  */
-export type OrderStatus = Status;
+export type OrderStatus = keyof typeof Status;
 
