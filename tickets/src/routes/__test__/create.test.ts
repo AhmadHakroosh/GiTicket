@@ -2,6 +2,7 @@ import request from "supertest";
 
 import { app } from "../../app";
 import { Ticket } from "../../models";
+import { EventBus } from "../../event-bus";
 
 it("Should has a route handler listening to /api/tickets for post requests", async () => {
     const response = await request(app)
@@ -85,4 +86,19 @@ it("Should create a ticket with valid parameters", async () => {
     expect(tickets.length).toEqual(1);
     expect(tickets[0].price).toEqual(price);
     expect(tickets[0].title).toEqual(title);
+});
+
+it("Should publish an event", async () => {
+    const { title, price } = {
+        title: "Some ticket",
+        price: 120
+    };
+
+    await request(app)
+        .post("/api/tickets")
+        .set("Cookie", global.signin())
+        .send({ title, price })
+        .expect(201);
+
+    expect(EventBus.client.publish).toHaveBeenCalled();
 });

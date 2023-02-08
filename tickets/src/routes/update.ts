@@ -3,6 +3,8 @@ import { body } from "express-validator";
 
 import { NotAuthorizedError, NotFoundError, requireAuth, validateRequest } from "@giticket.dev/common";
 import { Ticket } from "../models";
+import { TicketUpdatedPublisher } from "../events";
+import { EventBus } from "../event-bus";
 
 const router = Router();
 
@@ -25,6 +27,12 @@ router.put("/api/tickets/:id", requireAuth, [
     ticket.set({ title, price });
 
     await ticket.save();
+    await new TicketUpdatedPublisher(EventBus.client).publish({
+        id: ticket.id,
+        title: ticket.title,
+        price: ticket.price,
+        userId: ticket.userId
+    });
 
     res.send(ticket);
 });

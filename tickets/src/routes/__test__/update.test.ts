@@ -2,6 +2,7 @@ import request from "supertest";
 import { Types } from "mongoose";
 
 import { app } from "../../app";
+import { EventBus } from "../../event-bus";
 
 it("Should return a 401 if the user does not own the ticket", async () => {
     const { body } = await request(app)
@@ -89,4 +90,22 @@ it("Should update the ticket provided valid inputs", async () => {
 
     expect(updateResponse.body.title).toEqual("Some different title");
     expect(updateResponse.body.price).toEqual(500);
+});
+
+it("Should publish an event", async () => {
+    const cookie = global.signin();
+
+    const { body } = await request(app)
+        .post("/api/tickets")
+        .set("Cookie", cookie)
+        .send({ title: "Some ticket", price: 100 })
+        .expect(201);
+
+    await request(app)
+        .put(`/api/tickets/${body.id}`)
+        .set("Cookie", cookie)
+        .send({ title: "Some different title", price: 500 })
+        .expect(200);
+
+    expect(EventBus.client.publish).toHaveBeenCalled();
 });
