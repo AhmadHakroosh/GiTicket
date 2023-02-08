@@ -1,2 +1,2 @@
-export { TicketEventData } from "./ticket-event-data";
-export { OrderEventData } from "./order-event-data";
+export * from "./ticket-event-data";
+export * from "./order-event-data";
