@@ -1,3 +1,3 @@
-export { EventData } from "./event-data";
-export { Subject } from "./subject";
-export { OrderStatus } from "./order-status";
+export * from "./event-data";
+export * from "./subject";
+export * from "./order-status";
