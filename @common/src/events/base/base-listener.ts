@@ -1,8 +1,9 @@
 import { Message, Stan } from "node-nats-streaming";
+import { Queue } from "../enums";
 
 abstract class Listener<Subject extends string, EventData> {
     abstract subject: Subject;
-    abstract queueGroup: string;
+    abstract queueGroup: Queue;
 
     abstract onMessage(data: EventData, message: Message): void;
 
