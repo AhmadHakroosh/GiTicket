@@ -32,7 +32,7 @@ abstract class Listener<Subject extends string, EventData> {
         );
 
         subscription.on("message", (message: Message) => {
-            console.log(`${this.queueGroup} | Message received from ${this.subject} | Message: ${message}`)
+            console.log(`${this.queueGroup} | Message received from ${this.subject} | Message: ${message.getData()}`);
             const data = this.parseMessage(message);
 
             this.onMessage(data, message);
