@@ -1,4 +1,4 @@
-interface ExpirationCompleteEventData {
+export interface ExpirationCompleteEventData {
     orderId: string;
 };
 
