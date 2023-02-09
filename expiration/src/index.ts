@@ -1,4 +1,5 @@
 import { EventBus } from "./event-bus";
+import { OrderCreatedListener } from "./events/listeners";
 
 const bootstrap = async () => {
     if (!process.env.EVENT_BUS_CLUSTER_ID) {
@@ -13,6 +14,10 @@ const bootstrap = async () => {
         throw new Error("EVENT_BUS_URL must be defined");
     }
 
+    if (!process.env.REDIS_HOST) {
+        throw new Error("REDIS_HOST must be defined");
+    }
+
     try {
         await EventBus.connect(process.env.EVENT_BUS_CLUSTER_ID, process.env.EVENT_BUS_CLIENT_ID, process.env.EVENT_BUS_URL);
 
@@ -23,6 +28,8 @@ const bootstrap = async () => {
 
         process.on("SIGINT", () => EventBus.client.close());
         process.on("SIGTERM", () => EventBus.client.close());
+
+        new OrderCreatedListener(EventBus.client).listen();
 
     } catch (err) {
         console.error(err);
