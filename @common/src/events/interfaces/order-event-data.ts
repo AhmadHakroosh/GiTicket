@@ -2,6 +2,7 @@ import { OrderStatus } from "../enums";
 
 export interface OrderCreatedEventData {
     id: string;
+    version: number;
     status: OrderStatus;
     userId: string;
     expiresAt: string;
@@ -13,6 +14,7 @@ export interface OrderCreatedEventData {
 
 export interface OrderCancelledEventData {
     id: string;
+    version: number;
     ticket: {
         id: string;
     };

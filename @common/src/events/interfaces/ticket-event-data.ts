@@ -1,5 +1,6 @@
 export interface TicketCreatedEventData {
     id: string;
+    version: number;
     title: string;
     price: number;
     userId: string;
@@ -7,6 +8,7 @@ export interface TicketCreatedEventData {
 
 export interface TicketUpdatedEventData {
     id: string;
+    version: number;
     title: string;
     price: number;
     userId: string;
