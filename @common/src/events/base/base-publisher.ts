@@ -3,7 +3,7 @@ import { Stan } from "node-nats-streaming";
 export abstract class Publisher<Subject extends string, EventData> {
     abstract subject: Subject;
 
-    private client: Stan;
+    protected client: Stan;
 
     constructor(client: Stan) {
         this.client = client;

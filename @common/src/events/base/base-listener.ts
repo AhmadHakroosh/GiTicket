@@ -7,7 +7,7 @@ abstract class Listener<Subject extends string, EventData> {
 
     abstract onMessage(data: EventData, message: Message): void;
 
-    private client: Stan;
+    protected client: Stan;
 
     protected ackWait: number = 5 * 1000;
 

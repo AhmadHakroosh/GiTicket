@@ -12,6 +12,7 @@ export interface TicketUpdatedEventData {
     title: string;
     price: number;
     userId: string;
+    orderId?: string;
 };
 
 export type TicketEventData = TicketCreatedEventData | TicketUpdatedEventData;
