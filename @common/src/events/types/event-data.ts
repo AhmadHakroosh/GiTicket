@@ -1,3 +1,3 @@
-import { TicketEventData, OrderEventData } from "../interfaces";
+import { TicketEventData, OrderEventData, ExpirationEventData } from "../interfaces";
 
-export type EventData = TicketEventData | OrderEventData;
+export type EventData = TicketEventData | OrderEventData | ExpirationEventData;
