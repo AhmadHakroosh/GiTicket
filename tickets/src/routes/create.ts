@@ -24,6 +24,7 @@ router.post("/api/tickets", requireAuth, [
     
     await new TicketCreatedPublisher(EventBus.client).publish({
         id: ticket.id,
+        version: ticket.version,
         title: ticket.title,
         price: ticket.price,
         userId: ticket.userId

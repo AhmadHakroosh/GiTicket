@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { body } from "express-validator";
 
-import { NotAuthorizedError, NotFoundError, requireAuth, validateRequest } from "@giticket.dev/common";
+import { BadRequestError, NotAuthorizedError, NotFoundError, requireAuth, validateRequest } from "@giticket.dev/common";
 import { Ticket } from "../models";
 import { TicketUpdatedPublisher } from "../events";
 import { EventBus } from "../event-bus";
@@ -20,6 +20,10 @@ router.put("/api/tickets/:id", requireAuth, [
         throw new NotFoundError();
     }
 
+    if(ticket.orderId) {
+        throw new BadRequestError("Cannot edit a reserved ticket");
+    }
+
     if (ticket.userId !== req.currentUser!.id) {
         throw new NotAuthorizedError();
     }
@@ -29,6 +33,7 @@ router.put("/api/tickets/:id", requireAuth, [
     await ticket.save();
     await new TicketUpdatedPublisher(EventBus.client).publish({
         id: ticket.id,
+        version: ticket.version,
         title: ticket.title,
         price: ticket.price,
         userId: ticket.userId

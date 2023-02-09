@@ -6,6 +6,7 @@ import { Order, OrderStatus } from "./order";
  * required to create a new ticket instance 
  */
 interface TicketProperties {
+    _id?: string;
     title: string;
     price: number;
 }
@@ -20,7 +21,10 @@ interface TicketDocument extends Document {
     isReserved(): Promise<boolean>,
     createdAt: string;
     updatedAt: string;
+    version: number;
 }
+
+interface TicketModel extends Model<TicketDocument> { }
 
 /**
  * A mongoDB schema that describes the properties
@@ -38,7 +42,6 @@ const TicketSchema = new Schema({
 }, {
     timestamps: true,
     toJSON: {
-        versionKey: false,
         transform(_, ret) {
             ret.id = ret._id;
             delete ret._id;
@@ -46,7 +49,7 @@ const TicketSchema = new Schema({
     }
 });
 
-TicketSchema.methods.isReserved = async function() {
+TicketSchema.methods.isReserved = async function () {
     const orderExists = await Order.findOne({
         ticket: this,
         status: {
@@ -61,10 +64,27 @@ TicketSchema.methods.isReserved = async function() {
     return !!orderExists;
 };
 
-const TicketModel = model<TicketDocument, Model<TicketDocument>>("Ticket", TicketSchema);
+TicketSchema.set("versionKey", "version");
 
-export class Ticket extends TicketModel {
+TicketSchema.pre("save", function (done) {
+    this.$where = {
+        version: this.get("version") - 1
+    };
+
+    done();
+});
+
+const TicketInstance = model<TicketDocument, TicketModel>("Ticket", TicketSchema);
+
+export class Ticket extends TicketInstance {
     constructor(ticket: TicketProperties) {
-        super(new TicketModel(ticket));
+        super(new TicketInstance(ticket));
     }
+
+    static findByEvent(event: { id: string, version: number }) {
+        return this.findOne({
+            _id: event.id,
+            version: event.version - 1
+        });
+    };
 };

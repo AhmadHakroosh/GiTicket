@@ -49,6 +49,7 @@ router.post("/api/orders", requireAuth, [
     // Publish an event saying that an order was created
     await new OrderCreatedPublisher(EventBus.client).publish({
         id: order.id,
+        version: order.version,
         status: order.status,
         userId: order.userId,
         expiresAt: order.expiresAt.toISOString(),

@@ -3,6 +3,7 @@ import { Types } from "mongoose";
 
 import { app } from "../../app";
 import { EventBus } from "../../event-bus";
+import { Ticket } from "../../models";
 
 it("Should return a 401 if the user does not own the ticket", async () => {
     const { body } = await request(app)
@@ -108,4 +109,24 @@ it("Should publish an event", async () => {
         .expect(200);
 
     expect(EventBus.client.publish).toHaveBeenCalled();
+});
+
+it("Should reject updates if the ticket is reserved", async () => {
+    const cookie = global.signin();
+
+    const { body: ticket } = await request(app)
+        .post("/api/tickets")
+        .set("Cookie", cookie)
+        .send({ title: "Some ticket", price: 100 })
+        .expect(201);
+
+    const sameTicket = await Ticket.findById(ticket.id);
+    sameTicket!.set({ orderId: new Types.ObjectId().toHexString() });
+    await sameTicket!.save();
+
+    await request(app)
+        .put(`/api/tickets/${ticket.id}`)
+        .set("Cookie", cookie)
+        .send({ title: "Some different title", price: 500 })
+        .expect(400);
 });

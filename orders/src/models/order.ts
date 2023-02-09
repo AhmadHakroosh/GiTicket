@@ -1,6 +1,7 @@
 import { Model, Schema, model } from "mongoose";
 import { OrderStatus } from "@giticket.dev/common";
 import { Ticket } from "./ticket";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 export { OrderStatus };
 
@@ -26,7 +27,10 @@ interface OrderDocument extends Document {
     ticket: Ticket;
     createdAt: string;
     updatedAt: string;
+    version: number;
 }
+
+interface OrderModel extends Model<OrderDocument> { }
 
 /**
  * A mongoDB schema that describes the properties
@@ -54,7 +58,6 @@ const OrderSchema = new Schema({
 }, {
     timestamps: true,
     toJSON: {
-        versionKey: false,
         transform(_, ret) {
             ret.id = ret._id;
             delete ret._id;
@@ -62,10 +65,13 @@ const OrderSchema = new Schema({
     }
 });
 
-const OrderModel = model<OrderDocument, Model<OrderDocument>>("Order", OrderSchema);
+OrderSchema.set("versionKey", "version");
+OrderSchema.plugin(updateIfCurrentPlugin);
 
-export class Order extends OrderModel {
+const OrderInstance = model<OrderDocument, OrderModel>("Order", OrderSchema);
+
+export class Order extends OrderInstance {
     constructor(order: OrderProperties) {
-        super(new OrderModel(order));
+        super(new OrderInstance(order));
     }
 };

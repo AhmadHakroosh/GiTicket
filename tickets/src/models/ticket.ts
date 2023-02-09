@@ -1,4 +1,5 @@
 import { Model, Schema, model } from "mongoose";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 /**
  * An interface that describes the properties
@@ -20,7 +21,11 @@ interface TicketDocument extends Document {
     userId: string;
     createdAt: string;
     updatedAt: string;
+    version: number;
+    orderId?: string;
 }
+
+interface TicketModel extends Model<TicketDocument> { }
 
 /**
  * A mongoDB schema that describes the properties
@@ -38,11 +43,13 @@ const TicketSchema = new Schema({
     userId: {
         type: String,
         required: true
+    },
+    orderId: {
+        type: String
     }
 }, {
     timestamps: true,
     toJSON: {
-        versionKey: false,
         transform(_, ret) {
             ret.id = ret._id;
             delete ret._id;
@@ -50,10 +57,13 @@ const TicketSchema = new Schema({
     }
 });
 
-const TicketModel = model<TicketDocument, Model<TicketDocument>>("Ticket", TicketSchema);
+TicketSchema.set("versionKey", "version");
+TicketSchema.plugin(updateIfCurrentPlugin);
 
-export class Ticket extends TicketModel {
+const TicketInstance = model<TicketDocument, TicketModel>("Ticket", TicketSchema);
+
+export class Ticket extends TicketInstance {
     constructor(ticket: TicketProperties) {
-        super(new TicketModel(ticket));
+        super(new TicketInstance(ticket));
     }
 };
