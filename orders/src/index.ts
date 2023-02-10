@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 import { app } from "./app";
 import { EventBus } from "./event-bus";
-import { TicketCreatedListener, TicketUpdatedListener } from "./events/listeners";
+import { ExpirationCompleteListener, TicketCreatedListener, TicketUpdatedListener } from "./events/listeners";
 
 const bootstrap = async () => {
     if (!process.env.JWT_KEY) {
@@ -38,6 +38,7 @@ const bootstrap = async () => {
 
         new TicketCreatedListener(EventBus.client).listen();
         new TicketUpdatedListener(EventBus.client).listen();
+        new ExpirationCompleteListener(EventBus.client).listen();
 
         mongoose.set('strictQuery', false);
         await mongoose.connect(process.env.MONGO_URI!);
