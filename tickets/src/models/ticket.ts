@@ -1,5 +1,4 @@
 import { Model, Schema, model } from "mongoose";
-import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 /**
  * An interface that describes the properties
@@ -58,7 +57,14 @@ const TicketSchema = new Schema({
 });
 
 TicketSchema.set("versionKey", "version");
-TicketSchema.plugin(updateIfCurrentPlugin);
+
+TicketSchema.pre("save", function (done) {
+    this.$where = {
+        version: this.get("version") - 1
+    };
+
+    done();
+});
 
 const TicketInstance = model<TicketDocument, TicketModel>("Ticket", TicketSchema);
 

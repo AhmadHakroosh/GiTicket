@@ -1,6 +1,5 @@
 import { Model, Schema, model } from "mongoose";
 import { OrderStatus } from "@giticket.dev/common";
-import { Ticket } from "./ticket";
 
 export { OrderStatus };
 
@@ -11,8 +10,8 @@ export { OrderStatus };
 interface OrderProperties {
     userId: string;
     status: OrderStatus;
-    expiresAt: Date;
-    ticket: Ticket;
+    version: number;
+    price: number;
 }
 
 /**
@@ -22,11 +21,8 @@ interface OrderProperties {
 interface OrderDocument extends Document {
     userId: string;
     status: OrderStatus;
-    expiresAt: Date;
-    ticket: Ticket;
-    createdAt: string;
-    updatedAt: string;
     version: number;
+    price: number;
 }
 
 interface OrderModel extends Model<OrderDocument> { }
@@ -46,13 +42,9 @@ const OrderSchema = new Schema({
         enum: Object.values(OrderStatus),
         default: OrderStatus.Created
     },
-    expiresAt: {
-        type: Schema.Types.Date,
+    price: {
+        type: Number,
         required: true
-    },
-    ticket: {
-        type: Schema.Types.ObjectId,
-        ref: "Ticket"
     }
 }, {
     timestamps: true,
