@@ -55,6 +55,7 @@ const OrderSchema = new Schema({
         ref: "Ticket"
     }
 }, {
+    optimisticConcurrency: true,
     timestamps: true,
     toJSON: {
         transform(_, ret) {
@@ -65,14 +66,6 @@ const OrderSchema = new Schema({
 });
 
 OrderSchema.set("versionKey", "version");
-
-OrderSchema.pre("save", function (done) {
-    this.$where = {
-        version: this.get("version") - 1
-    };
-
-    done();
-});
 
 const OrderInstance = model<OrderDocument, OrderModel>("Order", OrderSchema);
 

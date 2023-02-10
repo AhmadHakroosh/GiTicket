@@ -47,6 +47,7 @@ const TicketSchema = new Schema({
         type: String
     }
 }, {
+    optimisticConcurrency: true,
     timestamps: true,
     toJSON: {
         transform(_, ret) {
@@ -57,14 +58,6 @@ const TicketSchema = new Schema({
 });
 
 TicketSchema.set("versionKey", "version");
-
-TicketSchema.pre("save", function (done) {
-    this.$where = {
-        version: this.get("version") - 1
-    };
-
-    done();
-});
 
 const TicketInstance = model<TicketDocument, TicketModel>("Ticket", TicketSchema);
 

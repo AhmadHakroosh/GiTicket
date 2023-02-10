@@ -18,6 +18,8 @@ const setup = async () => {
 
     await ticket.save();
 
+    console.log(ticket)
+
     // Create a fake data event
     const data: TicketUpdatedEventData = {
         id: ticket.id,

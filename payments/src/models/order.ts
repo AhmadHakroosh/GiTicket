@@ -8,9 +8,9 @@ export { OrderStatus };
  * required to create a new order instance 
  */
 interface OrderProperties {
+    _id?: string;
     userId: string;
     status: OrderStatus;
-    version: number;
     price: number;
 }
 
@@ -23,6 +23,8 @@ interface OrderDocument extends Document {
     status: OrderStatus;
     version: number;
     price: number;
+    createdAt: string;
+    updatedAt: string;
 }
 
 interface OrderModel extends Model<OrderDocument> { }
@@ -47,6 +49,7 @@ const OrderSchema = new Schema({
         required: true
     }
 }, {
+    optimisticConcurrency: true,
     timestamps: true,
     toJSON: {
         transform(_, ret) {
@@ -58,18 +61,17 @@ const OrderSchema = new Schema({
 
 OrderSchema.set("versionKey", "version");
 
-OrderSchema.pre("save", function (done) {
-    this.$where = {
-        version: this.get("version") - 1
-    };
-
-    done();
-});
-
 const OrderInstance = model<OrderDocument, OrderModel>("Order", OrderSchema);
 
 export class Order extends OrderInstance {
     constructor(order: OrderProperties) {
         super(new OrderInstance(order));
     }
+
+    static findByEvent(event: { id: string, version: number }) {
+        return this.findOne({
+            _id: event.id,
+            version: event.version - 1
+        });
+    };
 };

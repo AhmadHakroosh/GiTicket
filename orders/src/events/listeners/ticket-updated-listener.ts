@@ -14,8 +14,8 @@ export class TicketUpdatedListener extends Listener<Subject.TicketUpdated, Ticke
             throw new Error("Ticket not found");
         }
 
-        const { title, price, version } = data;
-        ticket.set({ title, price, version });
+        const { title, price } = data;
+        ticket.set({ title, price });
         await ticket.save();
 
         message.ack();

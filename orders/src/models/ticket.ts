@@ -40,6 +40,7 @@ const TicketSchema = new Schema({
         required: true
     }
 }, {
+    optimisticConcurrency: true,
     timestamps: true,
     toJSON: {
         transform(_, ret) {
@@ -65,14 +66,6 @@ TicketSchema.methods.isReserved = async function () {
 };
 
 TicketSchema.set("versionKey", "version");
-
-TicketSchema.pre("save", function (done) {
-    this.$where = {
-        version: this.get("version") - 1
-    };
-
-    done();
-});
 
 const TicketInstance = model<TicketDocument, TicketModel>("Ticket", TicketSchema);
 
