@@ -3,7 +3,7 @@ import mongoose, { Types } from "mongoose";
 import jwt from "jsonwebtoken";
 
 declare global {
-    var signin: () => string[];
+    var signin: (id?: string) => string[];
 }
 
 let mongo: MongoMemoryServer;
@@ -37,10 +37,10 @@ afterAll(async () => {
     await mongoose.connection.close();
 });
 
-global.signin = () => {
+global.signin = (id: string = new Types.ObjectId().toHexString()) => {
     // Build a JWT payload, i.e. { id, email }
     const payload = {
-        id: new Types.ObjectId().toHexString(),
+        id,
         email: "test@test.com"
     };
 

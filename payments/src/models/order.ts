@@ -10,7 +10,7 @@ export { OrderStatus };
 interface OrderProperties {
     _id?: string;
     userId: string;
-    status: OrderStatus;
+    status?: OrderStatus;
     price: number;
 }
 

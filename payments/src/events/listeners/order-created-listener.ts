@@ -9,7 +9,6 @@ export class OrderCreatedListener extends Listener<Subject.OrderCreated, OrderCr
     async onMessage(data: OrderCreatedEventData, message: Message): Promise<void> {
         const order = new Order({
             _id: data.id,
-            version: data.version,
             price: data.ticket.price,
             status: data.status,
             userId: data.userId

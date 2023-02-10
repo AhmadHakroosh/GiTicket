@@ -11,8 +11,7 @@ const setup = async () => {
     const order = new Order({
         status: OrderStatus.Created,
         price: 45,
-        userId: new Types.ObjectId().toHexString(),
-        version: 0
+        userId: new Types.ObjectId().toHexString()
     });
 
     await order.save();

@@ -2,10 +2,15 @@ import mongoose from "mongoose";
 
 import { app } from "./app";
 import { EventBus } from "./event-bus";
+import { OrderCancelledListener, OrderCreatedListener } from "./events/listeners";
 
 const bootstrap = async () => {
     if (!process.env.JWT_KEY) {
         throw new Error("JWT_KEY must be defined");
+    }
+
+    if (!process.env.STRIPE_KEY) {
+        throw new Error("STRIPE_KEY must be defined");
     }
 
     if (!process.env.MONGO_URI) {
@@ -34,6 +39,9 @@ const bootstrap = async () => {
 
         process.on("SIGINT", () => EventBus.client.close());
         process.on("SIGTERM", () => EventBus.client.close());
+
+        new OrderCreatedListener(EventBus.client).listen();
+        new OrderCancelledListener(EventBus.client).listen();
 
         mongoose.set('strictQuery', false);
         await mongoose.connect(process.env.MONGO_URI!);
