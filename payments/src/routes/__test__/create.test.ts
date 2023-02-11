@@ -11,7 +11,7 @@ it("Should return a 404 when trying to pay for an order that does not exist", as
         .post("/api/payments")
         .set("Cookie", global.signin())
         .send({
-            token: "12iehdso9",
+            paymentId: "12iehdso9",
             orderId: new Types.ObjectId().toHexString()
         })
         .expect(404);
@@ -29,7 +29,7 @@ it("Should return a 401 when trying to pay for an order that does not belong to 
         .post("/api/payments")
         .set("Cookie", global.signin())
         .send({
-            token: "12iehdso9",
+            paymentId: "12iehdso9",
             orderId: order.id
         })
         .expect(401);
@@ -62,20 +62,27 @@ it("Should return 201 with valid inputs", async () => {
 
     await order.save();
 
+    const { id: paymentId } = await stripe.paymentIntents.create({
+        amount: order.price * 100,
+        currency: "usd",
+        confirm: true,
+        payment_method: "pm_card_visa",
+        description: `giticket.dev test automation`
+    });
+
     await request(app)
         .post("/api/payments")
         .set("Cookie", global.signin(order.userId))
         .send({
-            token: "tok_visa",
+            paymentId,
             orderId: order.id
         })
         .expect(201);
 
-    const { data: charges } = await stripe.charges.list({ limit: 100 });
-    const charge = charges.find(charge => charge.amount === order.price * 100);
+    const { status, amount_received } = await stripe.paymentIntents.retrieve(paymentId);
 
-    expect(charge).toBeDefined();
-    expect(charge!.currency).toEqual("usd");
+    expect(status).toEqual("succeeded");
+    expect(amount_received).toEqual(order.price * 100);
 });
 
 it("Should create a new payment record with correct data as returned by stripe", async () => {
@@ -86,21 +93,28 @@ it("Should create a new payment record with correct data as returned by stripe",
 
     await order.save();
 
+    const { id: paymentId } = await stripe.paymentIntents.create({
+        amount: order.price * 100,
+        currency: "usd",
+        confirm: true,
+        payment_method: "pm_card_visa",
+        description: `giticket.dev test automation`
+    });
+
     await request(app)
         .post("/api/payments")
         .set("Cookie", global.signin(order.userId))
         .send({
-            token: "tok_visa",
+            paymentId,
             orderId: order.id
         })
         .expect(201);
 
-    const { data: charges } = await stripe.charges.list({ limit: 100 });
-    const charge = charges.find(charge => charge.amount === order.price * 100);
+    const { status, amount_received } = await stripe.paymentIntents.retrieve(paymentId);
 
-    expect(charge).toBeDefined();
-    expect(charge!.currency).toEqual("usd");
+    expect(status).toEqual("succeeded");
+    expect(amount_received).toEqual(order.price * 100);
 
-    const payment = await Payment.findOne({ orderId: order.id, stripeId: charge!.id });
+    const payment = await Payment.findOne({ orderId: order.id, stripeId: paymentId });
     expect(payment).not.toBeNull();
 });
