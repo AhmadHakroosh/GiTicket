@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Router from "next/router";
 import {
     PaymentElement,
     LinkAuthenticationElement,
@@ -22,7 +23,7 @@ const CheckoutForm = ({ currentUser, orderId }) => {
             paymentId: paymentId,
             orderId
         },
-        onSuccess: console.log
+        onSuccess: () => Router.push("/orders")
     });
 
     useEffect(() => {
