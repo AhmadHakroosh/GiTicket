@@ -10,7 +10,7 @@ export interface OrderCreatedEventData {
         id: string;
         price: number;
     };
-    clientSecret: string;
+    clientSecret: string | null;
 };
 
 export interface OrderCancelledEventData {
