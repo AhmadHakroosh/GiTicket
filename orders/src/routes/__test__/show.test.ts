@@ -3,9 +3,6 @@ import request from "supertest";
 import { app } from "../../app";
 import { Ticket } from "../../models";
 import { Types } from "mongoose";
-import { stripe } from "../../stripe";
-
-jest.mock("../../stripe")
 
 it("Should has a route handler listening to /api/orders/:id for get requests", async () => {
     const orderId = new Types.ObjectId().toHexString();
@@ -93,5 +90,5 @@ it("Should fetch the order", async () => {
         .send()
         .expect(200);
 
-    expect(body.order.id).toEqual(order.id);
+    expect(body.id).toEqual(order.id);
 });

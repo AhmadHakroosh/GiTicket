@@ -18,7 +18,8 @@ const setup = async () => {
         userId: "123",
         status: OrderStatus.Created,
         expiresAt: new Date(),
-        ticket
+        ticket,
+        clientSecret: "face_client_secret"
     });
 
     await order.save();
