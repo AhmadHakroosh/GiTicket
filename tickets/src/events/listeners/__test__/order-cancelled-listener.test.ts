@@ -36,6 +36,20 @@ const setup = async () => {
     return { listener, data, ticket, message };
 };
 
+it("Should throw an error if no ticket was found", async () => {
+    const { listener, data, message } = await setup();
+
+    data.ticket.id = new Types.ObjectId().toHexString();
+
+    try {
+        await listener.onMessage(data, message);
+    } catch (error: any) {
+        expect(error.message).toEqual("Ticket was not found");
+    }
+
+    expect(message.ack).not.toHaveBeenCalled();
+});
+
 it("Should set the orderId property to undefined", async () => {
     const { listener, data, ticket, message } = await setup();
 
