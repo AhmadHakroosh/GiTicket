@@ -48,7 +48,7 @@ it("Should return a 400 when trying to pay for a cancelled order", async () => {
         .post("/api/payments")
         .set("Cookie", global.signin(order.userId))
         .send({
-            token: "12iehdso9",
+            paymentId: "12iehdso9",
             orderId: order.id
         })
         .expect(400);
@@ -83,6 +83,39 @@ it("Should return 201 with valid inputs", async () => {
 
     expect(status).toEqual("succeeded");
     expect(amount_received).toEqual(order.price * 100);
+});
+
+it("Should throw an error of payment failure", async () => {
+    const order = new Order({
+        userId: new Types.ObjectId().toHexString(),
+        price: Math.floor(Math.random() * 1000000)
+    });
+
+    await order.save();
+
+    const { id: paymentId } = await stripe.paymentIntents.create({
+        amount: order.price * 100,
+        currency: "usd",
+        payment_method: "pm_card_visa",
+        description: `giticket.dev test automation`
+    });
+
+    try {
+        await request(app)
+            .post("/api/payments")
+            .set("Cookie", global.signin(order.userId))
+            .send({
+                paymentId,
+                orderId: order.id
+            });
+    } catch (error: any) {
+        expect(error.message).toEqual("Payment was not successfull");
+    }
+
+    const { status, amount_received } = await stripe.paymentIntents.retrieve(paymentId);
+
+    expect(status).toEqual("requires_confirmation");
+    expect(amount_received).toEqual(0);
 });
 
 it("Should create a new payment record with correct data as returned by stripe", async () => {
