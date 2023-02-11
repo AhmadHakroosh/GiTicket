@@ -34,8 +34,6 @@ router.post("/api/payments", requireAuth, [
 
     const stripePayment: Stripe.PaymentIntent = await stripe.paymentIntents.retrieve(paymentId);
 
-    console.log(stripePayment);
-
     if(stripePayment.status !== "succeeded") {
         throw new Error("Payment was not successfull");
     }
