@@ -7,7 +7,7 @@ import { Order, Ticket, OrderStatus } from "../models";
 import { OrderCreatedPublisher } from "../events/publishers";
 import { EventBus } from "../event-bus";
 
-const EXPIRATION_WINDOW_SECONDS = 15 * 60;
+const EXPIRATION_WINDOW_SECONDS = 60;
 
 const router = Router();
 

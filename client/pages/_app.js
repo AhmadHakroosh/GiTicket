@@ -1,15 +1,18 @@
 import "bootstrap/dist/css/bootstrap.css";
+import "../styles/common.css";
 
 import { apiClient } from "../api";
-import { Header } from "../components/header";
+import { Header } from "../components";
 
 const App = ({ Component, pageProps, currentUser }) => {
-    return <div className="app">
-        <Header currentUser={currentUser} />
-        <div className="p-3">
-            <Component {...pageProps} />
+    return (
+        <div className="app">
+            <Header currentUser={currentUser} />
+            <div className="container">
+                <Component currentUser={currentUser} {...pageProps} />
+            </div>
         </div>
-    </div>;
+    );
 };
 
 App.getInitialProps = async context => {
@@ -24,7 +27,7 @@ App.getInitialProps = async context => {
     let pageProps = {};
 
     if (context.Component.getInitialProps) {
-        pageProps = await context.Component.getInitialProps(context.ctx);
+        pageProps = await context.Component.getInitialProps(context.ctx, api, data.currentUser);
     }
 
     return {

@@ -1,6 +1,8 @@
-import { BadRequestError, NotAuthorizedError, NotFoundError, OrderStatus, requireAuth, validateRequest } from "@giticket.dev/common";
-import { Router, Request, Response } from "express";
+import Stripe from "stripe";
 import { body } from "express-validator";
+import { Router, Request, Response } from "express";
+import { BadRequestError, NotAuthorizedError, NotFoundError, OrderStatus, requireAuth, validateRequest } from "@giticket.dev/common";
+
 import { Order, Payment } from "../models";
 import { stripe } from "../stripe";
 import { PaymentCreatedPublisher } from "../events/publishers";
@@ -9,10 +11,12 @@ import { EventBus } from "../event-bus";
 const router = Router();
 
 router.post("/api/payments", requireAuth, [
-    body("token").notEmpty(),
+    body("paymentId").notEmpty(),
     body("orderId").notEmpty()
 ], validateRequest, async (req: Request, res: Response) => {
-    const { token, orderId } = req.body;
+    const { paymentId, orderId } = req.body;
+
+    console.log(paymentId);
 
     const order = await Order.findById(orderId);
 
@@ -28,15 +32,17 @@ router.post("/api/payments", requireAuth, [
         throw new BadRequestError("The specified order was cancelled");
     }
 
-    const charge = await stripe.charges.create({
-        currency: "usd",
-        amount: order.price * 100,
-        source: token
-    });
+    const stripePayment: Stripe.PaymentIntent = await stripe.paymentIntents.retrieve(paymentId);
+
+    console.log(stripePayment);
+
+    if(stripePayment.status !== "succeeded") {
+        throw new Error("Payment was not successfull");
+    }
 
     const payment = new Payment({
         orderId,
-        stripeId: charge!.id
+        stripeId: stripePayment.id
     });
 
     await payment.save();
@@ -47,7 +53,7 @@ router.post("/api/payments", requireAuth, [
         stripeId: payment.stripeId
     });
 
-    res.status(201).send({ id: payment.id });
+    res.status(201).send({ payment: stripePayment });
 });
 
 export { router as CreatePaymentRouter };
