@@ -8,7 +8,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { useRequest } from "../hooks";
 
-const CheckoutForm = ({ currentUser, orderId }) => {
+const CheckoutForm = ({ currentUser, order }) => {
     const stripe = useStripe();
     const elements = useElements();
 
@@ -21,7 +21,7 @@ const CheckoutForm = ({ currentUser, orderId }) => {
         method: "post",
         body: {
             paymentId: paymentId,
-            orderId
+            orderId: order.id
         },
         onSuccess: () => Router.push("/orders")
     });

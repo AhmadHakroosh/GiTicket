@@ -13,6 +13,7 @@ interface OrderProperties {
     status: OrderStatus;
     expiresAt: Date;
     ticket: Ticket;
+    clientSecret: string | null;
 }
 
 /**
@@ -27,6 +28,7 @@ interface OrderDocument extends Document {
     createdAt: string;
     updatedAt: string;
     version: number;
+    clientSecret: string | null;
 }
 
 interface OrderModel extends Model<OrderDocument> { }
@@ -53,6 +55,9 @@ const OrderSchema = new Schema({
     ticket: {
         type: Schema.Types.ObjectId,
         ref: "Ticket"
+    },
+    clientSecret: {
+        type: String
     }
 }, {
     optimisticConcurrency: true,

@@ -5,7 +5,7 @@ import { Elements } from "@stripe/react-stripe-js";
 
 const stripePromise = loadStripe("pk_test_51HPVUxFxnBpDGwA9V6HlolS3X2hrqz8uzsYbXH8QsrpKPGoknBXIjTtb8hzqkzz1abIUPc9mQJylXhIHFmrIsLbI00Fn8ubMux");
 
-const Order = ({ order, clientSecret, currentUser }) => {
+const Order = ({ order, currentUser }) => {
     const [timeLeft, setTimeLeft] = useState(0);
 
     const appearance = {
@@ -13,7 +13,7 @@ const Order = ({ order, clientSecret, currentUser }) => {
     };
 
     const options = {
-        clientSecret,
+        clientSecret: order.clientSecret,
         appearance,
     };
 
@@ -38,9 +38,9 @@ const Order = ({ order, clientSecret, currentUser }) => {
     return (
         <div>
             <div>Time left to pay: {timeLeft} seconds</div>
-            {clientSecret && (
+            {order.clientSecret && (
                 <Elements options={options} stripe={stripePromise}>
-                    <CheckoutForm currentUser={currentUser} orderId={order.id} />
+                    <CheckoutForm currentUser={currentUser} order={order} />
                 </Elements>
             )}
         </div>
@@ -49,9 +49,9 @@ const Order = ({ order, clientSecret, currentUser }) => {
 
 Order.getInitialProps = async (context, api, currentUser) => {
     const { orderId } = context.query;
-    const { data } = await api.get(`/api/orders/${orderId}`);
+    const { data: order } = await api.get(`/api/orders/${orderId}`);
 
-    return { order: data.order, clientSecret: data.clientSecret, currentUser };
+    return { order, currentUser };
 };
 
 export default Order;

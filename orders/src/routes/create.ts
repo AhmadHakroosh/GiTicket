@@ -6,6 +6,7 @@ import { Types } from "mongoose";
 import { Order, Ticket, OrderStatus } from "../models";
 import { OrderCreatedPublisher } from "../events/publishers";
 import { EventBus } from "../event-bus";
+import { stripe } from "../stripe";
 
 const EXPIRATION_WINDOW_SECONDS = 60;
 
@@ -37,13 +38,25 @@ router.post("/api/orders", requireAuth, [
     const expiresAt = new Date();
     expiresAt.setSeconds(expiresAt.getSeconds() + EXPIRATION_WINDOW_SECONDS);
 
+    // Create a PaymentIntent with the order amount and currency
+    const paymentIntent = await stripe.paymentIntents.create({
+        amount: ticket.price * 100,
+        currency: "usd",
+        automatic_payment_methods: {
+            enabled: true,
+        },
+        description: `You payment for ticket: ${ticket.title} from tickets.dev`
+    });
+
     // Create the order and save it to the database
     const order = new Order({
         userId: req.currentUser!.id,
         status: OrderStatus.Created,
         expiresAt,
-        ticket
+        ticket,
+        clientSecret: paymentIntent.client_secret
     });
+
     await order.save();
 
     // Publish an event saying that an order was created
@@ -56,7 +69,8 @@ router.post("/api/orders", requireAuth, [
         ticket: {
             id: ticket.id,
             price: ticket.price
-        }
+        },
+        clientSecret: paymentIntent.client_secret
     });
 
     res.status(201).send(order);

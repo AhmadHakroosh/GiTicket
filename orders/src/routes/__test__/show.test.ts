@@ -3,6 +3,9 @@ import request from "supertest";
 import { app } from "../../app";
 import { Ticket } from "../../models";
 import { Types } from "mongoose";
+import { stripe } from "../../stripe";
+
+jest.mock("../../stripe")
 
 it("Should has a route handler listening to /api/orders/:id for get requests", async () => {
     const orderId = new Types.ObjectId().toHexString();
@@ -84,11 +87,11 @@ it("Should fetch the order", async () => {
         .expect(201);
 
     // Make a request to fetch the order
-    const { body: fetchedOrder } = await request(app)
+    const { body } = await request(app)
         .get(`/api/orders/${order.id}`)
         .set("Cookie", user)
         .send()
         .expect(200);
 
-    expect(fetchedOrder.id).toEqual(order.id);
+    expect(body.order.id).toEqual(order.id);
 });
