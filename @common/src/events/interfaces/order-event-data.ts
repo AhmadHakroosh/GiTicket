@@ -10,6 +10,7 @@ export interface OrderCreatedEventData {
         id: string;
         price: number;
     };
+    paymentIntent: string;
 };
 
 export interface OrderCancelledEventData {
