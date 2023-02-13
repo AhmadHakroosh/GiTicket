@@ -9,6 +9,7 @@ interface Order {
 const publisher = new ExpirationCompletePublisher(EventBus.client);
 
 const worker = async (job: { data: Order }) => {
+    console.log("hello world")
     await publisher.publish({
         orderId: job.data.orderId
     });
