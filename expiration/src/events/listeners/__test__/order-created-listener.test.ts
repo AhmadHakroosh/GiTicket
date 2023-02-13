@@ -3,9 +3,7 @@ import { EventBus } from "../../../event-bus";
 import { OrderCreatedListener } from "../order-created-listener";
 import { Types } from "mongoose";
 import { Message } from "node-nats-streaming";
-import { expirationQueue } from "../../../queues";
-
-jest.mock("../../../queues/expiration-queue");
+import { ExpirationQueue } from "../../../queues";
 
 const setup = async () => {
     const listener = new OrderCreatedListener(EventBus.client);
@@ -34,12 +32,17 @@ const setup = async () => {
 };
 
 it("Should add a job to the queue", async () => {
-    
     const { listener, data, message } = await setup();
+
+    const queue = ExpirationQueue.getQueue();
+
+    const add = jest.spyOn(queue, "add");
+
+    console.log(process.env)
 
     await listener.onMessage(data, message);
 
-    expect(expirationQueue.add).toHaveBeenCalled();
+    expect(add).toHaveBeenCalled();
 });
 
 it("Should ack the message", async () => {
