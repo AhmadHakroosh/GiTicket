@@ -38,11 +38,13 @@ it("Should add a job to the queue", async () => {
 
     const add = jest.spyOn(queue, "add");
 
-    console.log(process.env)
-
     await listener.onMessage(data, message);
 
     expect(add).toHaveBeenCalled();
+
+    const jobs = await queue.getDelayed();
+
+    expect(jobs.length).toEqual(1);
 });
 
 it("Should ack the message", async () => {
