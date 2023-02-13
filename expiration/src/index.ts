@@ -31,6 +31,8 @@ const bootstrap = async () => {
 
         new OrderCreatedListener(EventBus.client).listen();
 
+        console.log("Started service");
+
     } catch (err) {
         console.error(err);
     }
