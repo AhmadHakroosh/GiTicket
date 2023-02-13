@@ -30,8 +30,6 @@ const bootstrap = async () => {
         process.on("SIGTERM", () => EventBus.client.close());
 
         new OrderCreatedListener(EventBus.client).listen();
-
-        console.log("Expiration service was started successfully!");
     } catch (err) {
         console.error(err);
     }
