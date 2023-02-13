@@ -1,21 +1,26 @@
-import Queue from "bull";
-import { ExpirationCompletePublisher } from "../events/publishers/expiration-complete-publisher";
+import Queue, { Queue as BullQueue } from "bull";
+import { ExpirationCompletePublisher } from "../events/publishers";
 import { EventBus } from "../event-bus";
 
 interface Order {
     orderId: string;
 };
 
-const expirationQueue = new Queue<Order>("order-expiration", {
+const publisher = new ExpirationCompletePublisher(EventBus.client);
+
+const worker = async (job: { data: Order }) => {
+    await publisher.publish({
+        orderId: job.data.orderId
+    });
+};
+
+const expirationQueue: BullQueue<Order> = new Queue<Order>("order-expiration", {
     redis: {
-        host: process.env.REDIS_HOST
+        host: process.env.REDIS_HOST,
+        port: Number(process.env.REDIS_PORT || 6379)
     }
 });
 
-expirationQueue.process(async job => {
-    await new ExpirationCompletePublisher(EventBus.client).publish({
-        orderId: job.data.orderId
-    });
-});
+expirationQueue.process(worker);
 
-export { expirationQueue };
+export { expirationQueue, worker, publisher, Order };

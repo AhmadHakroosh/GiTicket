@@ -1,1 +1,1 @@
-export { expirationQueue } from "./expiration-queue";
+export * from "./expiration-queue";

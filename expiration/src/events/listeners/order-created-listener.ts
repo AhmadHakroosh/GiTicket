@@ -12,7 +12,7 @@ export class OrderCreatedListener extends Listener<Subject.OrderCreated, OrderCr
             {
                 orderId: data.id
             },
-            { 
+            {
                 delay
             }
         );

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node-dev src/index.ts",
-    "test": "jest --watchAll --no-cache"
+    "test": "jest --coverage --watchAll --no-cache"
   },
   "jest": {
     "preset": "ts-jest",
@@ -20,6 +20,8 @@
   "devDependencies": {
     "@types/jest": "^29.4.0",
     "jest": "^29.4.1",
+    "mongoose": "^6.9.1",
+    "redis-memory-server": "^0.6.0",
     "ts-jest": "^29.0.5"
   },
   "dependencies": {
