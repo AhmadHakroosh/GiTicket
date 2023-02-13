@@ -1,6 +1,7 @@
 import { RedisMemoryServer } from "redis-memory-server";
 
 jest.mock("../event-bus");
+jest.mock("bull");
 
 let redis: RedisMemoryServer;
 
