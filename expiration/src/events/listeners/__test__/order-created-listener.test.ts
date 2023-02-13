@@ -38,8 +38,6 @@ it("Should add a job to the queue", async () => {
 
     const add = jest.spyOn(queue, "add");
 
-    console.log(process.env)
-
     await listener.onMessage(data, message);
 
     expect(add).toHaveBeenCalled();
